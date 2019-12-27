@@ -1,0 +1,22 @@
+From a03a01a24abdbda67f7d8a6f4eacc05bfe2dd758 Mon Sep 17 00:00:00 2001
+From: BuildTools <unconfigured@null.spigotmc.org>
+Date: Tue, 24 Dec 2019 13:37:28 +0000
+Subject: [PATCH] Offset item frame ticking
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityHanging.java b/src/main/java/net/minecraft/server/EntityHanging.java
+index 1a607c5..16cd0b8 100644
+--- a/src/main/java/net/minecraft/server/EntityHanging.java
++++ b/src/main/java/net/minecraft/server/EntityHanging.java
+@@ -15,7 +15,7 @@ public abstract class EntityHanging extends Entity {
+     protected static final Predicate<Entity> a = (entity) -> {
+         return entity instanceof EntityHanging;
+     };
+-    private int d;
++    private int d; { this.d = this.getId() % this.world.spigotConfig.hangingTickFrequency; } // Paper
+     public BlockPosition blockPosition;
+     @Nullable
+     public EnumDirection direction;
+-- 
+2.8.1.windows.1
+

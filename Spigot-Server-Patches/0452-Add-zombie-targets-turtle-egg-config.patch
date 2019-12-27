@@ -1,0 +1,39 @@
+From 3672d5a31f2d83fc3bce3bd4d9c1b6e03d689668 Mon Sep 17 00:00:00 2001
+From: BuildTools <unconfigured@null.spigotmc.org>
+Date: Thu, 26 Dec 2019 23:20:33 +0000
+Subject: [PATCH] Add zombie targets turtle egg config
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+index dc0b771..ce881ce 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+@@ -454,6 +454,12 @@ public class PaperWorldConfig {
+         }
+     }
+ 
++    public boolean zombieTargetsTurtleEggs;
++    private void zombieTargetsTurtleEggs() {
++        zombieTargetsTurtleEggs = getBoolean( "zombie-target-turtle-eggs", true );
++        log( "Zombie Targets Turtle Eggs: " + zombieTargetsTurtleEggs );
++    }
++
+     public double squidMaxSpawnHeight;
+     private void squidMaxSpawnHeight() {
+         squidMaxSpawnHeight = getDouble("squid-spawn-height.maximum", 0.0D);
+diff --git a/src/main/java/net/minecraft/server/EntityZombie.java b/src/main/java/net/minecraft/server/EntityZombie.java
+index bf2bed0..09b44cf 100644
+--- a/src/main/java/net/minecraft/server/EntityZombie.java
++++ b/src/main/java/net/minecraft/server/EntityZombie.java
+@@ -44,7 +44,7 @@ public class EntityZombie extends EntityMonster {
+     }
+ 
+     protected void n() {
+-        this.goalSelector.a(4, new EntityZombie.a(Blocks.TURTLE_EGG, this, 1.0D, 3));
++        if (world.paperConfig.zombieTargetsTurtleEggs) this.goalSelector.a(4, new EntityZombie.a(Blocks.TURTLE_EGG, this, 1.0D, 3)); // Paper
+         this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
+         this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+         this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
+-- 
+2.8.1.windows.1
+
