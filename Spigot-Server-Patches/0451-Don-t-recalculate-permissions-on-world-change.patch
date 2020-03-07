@@ -1,0 +1,57 @@
+From c10fe117d7c72643d2c6b4fb3885a541caa2775c Mon Sep 17 00:00:00 2001
+From: galacticwarrior9 <9055352+galacticwarrior9@users.noreply.github.com>
+Date: Sat, 8 Feb 2020 11:22:27 +0000
+Subject: [PATCH] Don't recalculate permissions on world change
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+index ce881ce..5a087f1 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+@@ -473,6 +473,11 @@ public class PaperWorldConfig {
+         disableHopperMoveEvents = getBoolean("hopper.disable-move-event", disableHopperMoveEvents);
+         log("Hopper Move Item Events: " + (disableHopperMoveEvents ? "disabled" : "enabled"));
+     }
++    
++    public boolean recalculatePermsOnWorldChange = false;
++    private void recalculatePermsOnWorldChange() {
++    	recalculatePermsOnWorldChange = getBoolean("recalculate-perms-on-world-change", recalculatePermsOnWorldChange);
++    }
+ 
+     public boolean disableSprintInterruptionOnAttack;
+     private void disableSprintInterruptionOnAttack() {
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index 012238a..625a2bc 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -729,7 +729,9 @@ public abstract class PlayerList {
+         entityplayer1.playerConnection.sendPacket(new PacketPlayOutSpawnPosition(blockposition1));
+         entityplayer1.playerConnection.sendPacket(new PacketPlayOutExperience(entityplayer1.exp, entityplayer1.expTotal, entityplayer1.expLevel));
+         this.b(entityplayer1, worldserver);
++        movedToWorld = true; // Paper
+         this.f(entityplayer1);
++        movedToWorld = false; // Paper
+         if (!entityplayer.playerConnection.isDisconnected()) {
+             worldserver.getPlayerChunkMap().addPlayer(entityplayer1);
+             worldserver.addEntity(entityplayer1);
+@@ -773,6 +775,8 @@ public abstract class PlayerList {
+         // CraftBukkit end
+         return entityplayer1;
+     }
++    
++    private boolean movedToWorld = false; // Paper
+ 
+     // CraftBukkit start - Replaced the standard handling of portals with a more customised method.
+     public void changeDimension(EntityPlayer entityplayer, DimensionManager dimensionManager, TeleportCause cause) {
+@@ -1181,7 +1185,7 @@ public abstract class PlayerList {
+             entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityStatus(entityplayer, b0));
+         }
+ 
+-        entityplayer.getBukkitEntity().recalculatePermissions(); // CraftBukkit
++        if(!(movedToWorld && !entityplayer.getWorldServer().paperConfig.recalculatePermsOnWorldChange)) entityplayer.getBukkitEntity().recalculatePermissions(); // CraftBukkit // Paper
+         this.server.getCommandDispatcher().a(entityplayer);
+     }
+ 
+-- 
+2.8.1.windows.1
+

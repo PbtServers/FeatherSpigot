@@ -1,0 +1,42 @@
+From 0757bc0e6a7870425e83ab358efb3606f604945a Mon Sep 17 00:00:00 2001
+From: galacticwarrior9 <9055352+galacticwarrior9@users.noreply.github.com>
+Date: Sat, 8 Feb 2020 11:25:20 +0000
+Subject: [PATCH] Do less work if we have a custom Bukkit generator
+
+
+diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
+index a6d0575..5e0a25e 100644
+--- a/src/main/java/net/minecraft/server/WorldServer.java
++++ b/src/main/java/net/minecraft/server/WorldServer.java
+@@ -782,12 +782,6 @@ public class WorldServer extends World implements IAsyncTaskHandler {
+         } else if (this.worldData.getType() == WorldType.DEBUG_ALL_BLOCK_STATES) {
+             this.worldData.setSpawn(BlockPosition.ZERO.up());
+         } else {
+-            WorldChunkManager worldchunkmanager = this.chunkProvider.getChunkGenerator().getWorldChunkManager();
+-            List<BiomeBase> list = worldchunkmanager.a();
+-            Random random = new Random(this.getSeed());
+-            BlockPosition blockposition = worldchunkmanager.a(0, 0, 256, list, random);
+-            ChunkCoordIntPair chunkcoordintpair = blockposition == null ? new ChunkCoordIntPair(0, 0) : new ChunkCoordIntPair(blockposition);
+-
+             // CraftBukkit start
+             if (this.generator != null) {
+                 Random rand = new Random(this.getSeed());
+@@ -802,6 +796,15 @@ public class WorldServer extends World implements IAsyncTaskHandler {
+                     }
+                 }
+             }
++            
++            // Paper start - this is useless if craftbukkit returns early
++            WorldChunkManager worldchunkmanager = this.chunkProvider.getChunkGenerator().getWorldChunkManager();
++            List<BiomeBase> list = worldchunkmanager.a();
++            Random random = new Random(this.getSeed());
++            BlockPosition blockposition = worldchunkmanager.a(0, 0, 256, list, random);
++            ChunkCoordIntPair chunkcoordintpair = blockposition == null ? new ChunkCoordIntPair(0, 0) : new ChunkCoordIntPair(blockposition);
++            // Paper end
++
+             // CraftBukkit end
+ 
+             if (blockposition == null) {
+-- 
+2.8.1.windows.1
+
