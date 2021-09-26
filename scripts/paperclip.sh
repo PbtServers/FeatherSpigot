@@ -12,11 +12,11 @@ vanillajar="$workdir/Minecraft/$mcver/$mcver.jar"
     cd "$workdir/Paperclip"
     mvn clean package "-Dmcver=$mcver" "-Dpaperjar=$paperjar" "-Dvanillajar=$vanillajar"
 )
-cp "$workdir/Paperclip/assembly/target/paperclip-${mcver}.jar" "$basedir/paperclip.jar"
+cp "$workdir/Paperclip/assembly/target/paperclip-${mcver}.jar" "$basedir/PbtServer-Paper-1.13.2.jar"
 
 echo ""
 echo ""
 echo ""
 echo "Build success!"
-echo "Copied final jar to $(cd "$basedir" && pwd -P)/paperclip.jar"
+echo "Copied final jar to $(cd "$basedir" && pwd -P)/PbtServer-Paper-1.13.2.jar"
 ) || exit 1
